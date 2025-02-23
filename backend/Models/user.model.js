@@ -25,12 +25,6 @@ const userSchema = new Schema(
             trim: true, 
             index: true
         },
-        uavs: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "Uav"
-            }
-        ],
         password: {
             type: String,
             required: [true, 'Password is required']

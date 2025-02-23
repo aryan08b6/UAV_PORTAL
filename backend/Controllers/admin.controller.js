@@ -3,15 +3,17 @@ import {ApiError} from "../util/ApiError.js"
 import { Uav } from "../Models/uav.model.js"
 import { Order } from "../Models/order.model.js";
 import { Product } from "../Models/product.model.js"
+import {Warehouse} from "../Models/warehouses.model.js"
 import { ApiResponse } from "../util/ApiResponse.js";
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
 
 const createWarehouse = asyncHandler(async(req, res) => {
     const { name, location, admin } = req.body
+    console.log(admin)
     const warehouse = await Warehouse.create({
         name,
-        location,
+        locale: location,
         admin
     })
 

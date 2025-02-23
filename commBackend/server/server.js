@@ -12,7 +12,7 @@ const io = socketIo(server, {
     }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 let connectedSockets = [];
 
 io.on('connection', (socket) => {
@@ -42,7 +42,6 @@ io.on('connection', (socket) => {
 
         if (!uav_sid) {
             console.log(`UAV with ID ${uav_id} not found`.bgRed.black);
-            return;
         }
 
         io.to(uav_sid).emit("establish_connection", { user_sid: socket.id, sdp_offer })

@@ -87,15 +87,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
-    const options = {
-        httpOnly: true,
-        secure: true
-    }
-
     return res
         .status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
+        .cookie("accessToken", accessToken)
+        .cookie("refreshToken", refreshToken)
         .json(
             new ApiResponse(
                 200,
@@ -121,15 +116,10 @@ const logoutUser = asyncHandler(async (req, res) => {
         }
     )
 
-    const options = {
-        httpOnly: true,
-        secure: true
-    }
-
     return res
         .status(200)
-        .clearCookie("accessToken", options)
-        .clearCookie("refreshToken", options)
+        .clearCookie("accessToken")
+        .clearCookie("refreshToken")
         .json(new ApiResponse(200, {}, "User logged Out"))
 })
 
@@ -155,17 +145,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             throw new ApiError(401, "Refresh token is expired or used")
         }
 
-        const options = {
-            httpOnly: true,
-            secure: true
-        }
-        
+
         const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id)
 
         return res
             .status(200)
-            .cookie("accessToken", accessToken, options)
-            .cookie("refreshToken", refreshToken, options)
+            .cookie("accessToken", accessToken)
+            .cookie("refreshToken", refreshToken)
             .json(
                 new ApiResponse(
                     200,
@@ -242,7 +228,7 @@ const setUav = asyncHandler(async (req, res) => {
     if (uav.owner != req.user._id) {
         throw new ApiError(401, "Uav does not belong to the user");
     } else {
-        await Uav.findOneAndUpdate({ _id: req.uav_id }, {password: req.password})
+        await Uav.findOneAndUpdate({ _id: req.uav_id }, { password: req.password })
     }
 
 })

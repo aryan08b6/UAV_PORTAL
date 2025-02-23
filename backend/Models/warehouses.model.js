@@ -2,7 +2,7 @@ import mongoose, {Schema} from "mongoose";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
-const ProductSchema = new Schema(
+const WarehouseSchema = new Schema(
     {
         name: {
             type: String,
@@ -23,4 +23,4 @@ const ProductSchema = new Schema(
 )
 
 
-export const Product = mongoose.model("Product", ProductSchema)
+export const Warehouse = mongoose.model("Warehouse", WarehouseSchema)

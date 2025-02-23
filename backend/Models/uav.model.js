@@ -8,6 +8,10 @@ const uavSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "product",
         },
+        name: {
+            type: String,
+            default: "UAV",
+        },
         owner: {
             type: Schema.Types.ObjectId,
             ref: 'User'

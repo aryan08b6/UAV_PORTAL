@@ -28,6 +28,9 @@ from aiortc.rtcrtpsender import RTCRtpSender
 ROOT = os.path.dirname(__file__)
 
 
+id = "67b9be2090824eb85d08b5e9"
+password = "uavPassword"
+
 relay = None
 webcam = None
 
@@ -175,7 +178,7 @@ async def on_ice_state_change():
 
 
 async def main():
-    await sio.connect('http://localhost:3000', auth={"type": "uav", "id": "uav123"})
+    await sio.connect('http://localhost:5000', auth={"type": "uav", "id": id})
     print("✅ Connected to Server")
     await sio.wait()
 

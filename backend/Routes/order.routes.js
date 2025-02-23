@@ -2,18 +2,25 @@ import { Router } from "express";
 import { 
     createOrder,
     getOrders,
-    completeOrder
+    completeOrder,
+    getProducts,
+    getUserOrders
 } from "../Controllers/order.controller.js";
 import { verifyAdmin, verifyJWT } from "../Middleware/auth.middleware.js";
 
 
 const router = Router()
 
+//common
+router.route("/getProducts").post(getProducts);
+
 //user
-router.route("/create-order").post(verifyJWT, createOrder);
+router.route("/create-orders").post(verifyJWT, createOrder);
+router.route("/user/get-orders").post(verifyJWT, getUserOrders);
+
 
 //admin
-router.route("/admin/get-orders").post(verifyJWT, getOrders);
+router.route("/admin/get-orders").post(verifyAdmin, getOrders);
 router.route("/complete-order").post(verifyAdmin, completeOrder);
 
 

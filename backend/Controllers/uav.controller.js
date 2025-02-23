@@ -3,6 +3,11 @@ import { asyncHandler } from "../util/asyncHandler.js";
 import { ApiError } from "../util/ApiError.js"
 import { ApiResponse } from "../util/ApiResponse.js";
 
+const getUAVS = asyncHandler(async (req, res) => {  
+    const uavs = await Uav.find({ owner: req.user._id }).exec();
+    res.status(200).json(new ApiResponse(200, uavs, "Oreders"))
+});
+
 const loginUAV = asyncHandler(async (req, res) => {
 
     const { id, secret, password } = req.body
@@ -50,4 +55,29 @@ const loginUAV = asyncHandler(async (req, res) => {
         )
 })
 
-export { loginUAV }
+const changeName = asyncHandler(async (req, res) => {
+    console.log("Name change request")
+    const { name, uavID } = req.body
+    const userID = req.user._id
+    const uav = await Uav.findOne({ _id: uavID, owner: userID })
+    if (!uav) {
+        throw new ApiError(404, "UAV not found")
+    }
+    uav.name = name
+    await uav.save()
+    res.status(200).json(new ApiResponse(200, "Name changed successfully"))
+})  
+
+const changePassword = asyncHandler(async (req, res) => {
+    const { password, uavID } = req.body
+    const userID = req.user._id
+    const uav = await Uav.findOne({ _id: uavID, owner: userID })
+    if (!uav) {
+        throw new ApiError(404, "UAV not found")
+    }
+    uav.password = password
+    await uav.save()
+    res.status(200).json(new ApiResponse(200, "Password changed successfully"))
+})
+
+export { loginUAV, getUAVS, changeName, changePassword }
