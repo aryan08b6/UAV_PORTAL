@@ -54,6 +54,18 @@ io.on('connection', (socket) => {
         io.to(target_sid).emit("ice_candidates", { ice_candidates })
     })
 
+    socket.on("command", (data) => {
+        let { uav_sid, command } = data
+        console.log(`Command EXCHANGE ${uav_sid}, ${command}`.bgGreen.black)
+        io.to(uav_sid).emit("command", { command })
+    })
+
+    socket.on("command_status", (data) => {
+        let { user_sid, status } = data
+        console.log(`Command EXCHANGE ${user_sid}, ${status}`.bgGreen.black)
+        io.to(user_sid).emit("command_status", { status })
+    })
+
     socket.on("complete_connection", (data) => {
         console.log("Completing Connection".bgGreen.black)
         const { uav_sid, sdp_answer, user_sid } = data

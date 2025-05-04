@@ -15,6 +15,7 @@ import AdminDashboard from './Components/Admin/AdminDashboard'
 import AdminAccount from './Components/Admin/AdminAccount'
 import UserAccount from './Components/User/UserAccount'
 import PleaseLogin from './Components/Common/PleaseLogin'
+import ControlPanel from './Components/User/ControlPanel'
 
 const App = () => {
   const dispatch = useDispatch();
@@ -52,6 +53,9 @@ const App = () => {
           } />
           <Route path="account" element={
             user.type == "loggedOut" ? (<PleaseLogin />) : user.type == "Admin" ? (<AdminAccount />) : (<UserAccount />)
+          } />
+          <Route path="uav/:id/:name" element={
+            user.type == "loggedOut" ? (<PleaseLogin />) : (<ControlPanel />)
           } />
         </Route>
       </Routes>

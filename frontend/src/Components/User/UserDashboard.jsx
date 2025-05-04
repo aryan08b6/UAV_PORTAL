@@ -1,24 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import Button from '../Common/Button';
 import axios from 'axios';
-import ControlModal from './ControlModal';
 import ChangePasswordModal from './ChangePasswordModal';
 import ChangeNameModal from './ChangeNameModal';
-import io from 'socket.io-client'
-
-const peerConnectionConfig = {
-  iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
-  ]
-};
-
-const peerConnection = new RTCPeerConnection(peerConnectionConfig)
-peerConnection.addTransceiver("video", { direction: "recvonly" })
-
-const socket = io("http://localhost:5000", {
-  auth: { type: "user", id: "user1234" },
-});
+import { useNavigate } from 'react-router-dom';
 
 const UserDashboard = () => {
   const [uavs, setUavs] = useState([]);
@@ -26,9 +11,7 @@ const UserDashboard = () => {
   const [modalName, setModalName] = useState("none");
   const [password, setPassword] = useState("");
   const [newName, setNewName] = useState("");
-  const uavFeedRef = useRef(null);
-  const [uavSID, setUavSID] = useState("")
-  const [iceCandidates, setIceCandidates] = useState([])
+  const navigate = useNavigate();
 
 
   const fetchOrders = async () => {
@@ -44,81 +27,8 @@ const UserDashboard = () => {
   };
 
   useEffect(() => {
-
     fetchOrders();
-
-    socket.on("connect", () => {
-      console.log("Connected to server")
-    })
-
-    socket.on("disconnect", () => {
-      console.log("Disconnected from server")
-    })
-
-    socket.on("complete_connection", async (data) => {
-      console.log("2. Got SDP Answer", data)
-      setUavSID(data.uav_sid)
-      await peerConnection.setRemoteDescription(data.sdp_answer)
-      console.log("3. Added SDP Answer")
-
-      console.log(`Sending ICE Candidates ${iceCandidates.length}`)
-
-      setIceCandidates((prevItems) => {
-        console.log("Sending ICE Candidate", prevItems.length)
-        socket.emit("ice_candidates", { target_sid: data.uav_sid, ice_candidates: prevItems })
-        return []
-      })
-
-      console.log("SENT ICE Candidates")
-    })
-
-    peerConnection.ontrack = (event) => {
-      console.log("Received video track from UAV");
-      if (uavFeedRef.current) {
-        uavFeedRef.current.srcObject = event.streams[0];
-      }
-    };
-
-    peerConnection.onicecandidate = (event) => {
-      if (event.candidate === null || event.candidate.candidate === "") {
-        return;
-      }
-
-      setIceCandidates((prevItems) => {
-        if (uavSID !== "" && prevItems.length > 9) {
-          console.log("Sending ICE Candidate", prevItems.length)
-          socket.emit("ice_candidates", { target_sid: data.uav_sid, ice_candidates: prevItems })
-          return []
-        } else {
-          const newCandidates = [...prevItems, event.candidate];
-          return newCandidates;
-        }
-      })
-    }
-
-    return () => socket.disconnect();
   }, [])
-
-  const establish_connection = async (uav) => {
-    console.log("1. Sending Offer")
-    const offer = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offer);
-    try{
-      console.log("1. Sending Offer")
-      socket.emit("establish_connection", { uav_id: uav._id, sdp_offer: offer })
-    } catch (error) {
-      console.log(error)
-      alert("UAV is not connected")
-      closeModal()
-    }
-  }
-
-  const send_command = (command) => {
-    socket.emit("send_command", { uav_sid: uavSID, command })
-  }
-
-
-
 
   const closeModal = () => {
     setSelectedUav(null);
@@ -137,11 +47,11 @@ const UserDashboard = () => {
     setSelectedUav(uav);
   }
 
+
   const activatePassword = (uav) => {
     setPassword("")
     setModalName("changePassword");
     setSelectedUav(uav);
-
   }
 
   const changePassword = async () => {
@@ -183,7 +93,7 @@ const UserDashboard = () => {
                 </div>
 
                 <div className='flex flex-row items-center justify-between'>
-                  <Button func={() => connect(uav)} command={"Connect"} />
+                  <Button func={() => navigate(`/uav/${uav._id}/${uav.name}`)} command={"Connect"} />
                   <Button func={() => activateName(uav)} command={"Change Name"} />
                   <Button func={() => activatePassword(uav)} command={"Change Password"} />
                 </div>
@@ -193,9 +103,7 @@ const UserDashboard = () => {
         </div>
       </div>
 
-      {modalName == "connect" && (
-        ControlModal(selectedUav, closeModal, uavFeedRef)
-      )}
+
       {modalName == "changeName" && (
         ChangeNameModal(closeModal, newName, setNewName, changeName)
       )}

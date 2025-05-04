@@ -1,0 +1,8 @@
+opencv-python
+aiortc
+aiohttp
+python-socketio[asyncio_client]
+pymavlink
+pyserial
+
+
